@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistan Energy Vision 2030 - AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #5f8f73 0%, #4c8667 50%, #0d3d22 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .chat-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .message {
+            margin: 15px 0;
+            padding: 15px 20px;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .agent-message {
+            background: rgba(76, 175, 80, 0.3);
+            border-left: 4px solid #4caf50;
+            margin-right: auto;
+        }
+        
+        .user-message {
+            background: rgba(255, 255, 255, 0.2);
+            border-right: 4px solid #ffeb3b;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: bounce 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1em;
+            outline: none;
+        }
+        
+        #sendBtn {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        #sendBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .quick-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .quick-btn {
+            background: rgba(255, 235, 59, 0.3);
+            border: 2px solid #ffeb3b;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(255, 235, 59, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .stats-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Pakistan Energy Vision 2030 AI Assistant</h1>
+            <p>Ask me anything about Pakistan's energy future!</p>
+        </header>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message agent-message">
+                <strong>🤖 Energy AI:</strong><br>
+                Hello! I'm your Pakistan Energy Vision 2030 assistant. I can help you understand our goals for reliable, green, and affordable power. What would you like to know?
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask about solar, wind, hydropower, costs, jobs..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button id="sendBtn" onclick="sendMessage()">Send 📤</button>
+        </div>
+
+        <div class="quick-options">
+            <button class="quick-btn" onclick="quickAsk('renewable energy targets')">🌱 Renewable Targets</button>
+            <button class="quick-btn" onclick="quickAsk('solar power plans')">☀️ Solar Plans</button>
+            <button class="quick-btn" onclick="quickAsk('electricity costs')">💰 Cost Savings</button>
+            <button class="quick-btn" onclick="quickAsk('job creation')">👷 Job Creation</button>
+            <button class="quick-btn" onclick="quickAsk('load shedding solution')">⚡ Load Shedding</button>
+        </div>
+    </div>
+
+    <script>
+        const knowledgeBase = {
+            renewable: {
+                keywords: ['renewable', 'green', 'clean', 'sustainable', 'environment'],
+                response: "Pakistan's Vision 2030 targets 60% renewable energy! This includes:<br><br>🌞 Solar: 10,000 MW capacity<br>💨 Wind: 5,000 MW from coastal areas<br>💧 Hydro: 15,000 MW from new dams<br><br>This will reduce CO₂ emissions by 40% and create a sustainable future!",
+                stats: {solar: '10,000 MW', wind: '5,000 MW', hydro: '15,000 MW', reduction: '40%'}
+            },
+            solar: {
+                keywords: ['solar', 'sun', 'photovoltaic', 'panels'],
+                response: "Pakistan's solar energy plan is ambitious! 🌞<br><br>✓ 10,000 MW solar capacity by 2030<br>✓ Rooftop solar programs for homes<br>✓ Large-scale solar parks in Balochistan and Punjab<br>✓ Net metering for consumers<br>✓ 30% cost reduction in electricity bills<br><br>Pakistan receives 300+ sunny days annually - perfect for solar!",
+                stats: {capacity: '10,000 MW', parks: '15+', savings: '30%'}
+            },
+            wind: {
+                keywords: ['wind', 'turbine', 'coastal'],
+                response: "Wind energy is a key pillar! 💨<br><br>✓ 5,000 MW wind capacity planned<br>✓ Focus on Sindh coastal corridor<br>✓ Gharo-Keti Bandar wind corridor<br>✓ 24/7 clean energy generation<br>✓ Partnership with international developers<br><br>Pakistan's coastline offers excellent wind speeds of 7-8 m/s!",
+                stats: {capacity: '5,000 MW', corridor: 'Sindh Coast', speed: '7-8 m/s'}
+            },
+            hydro: {
+                keywords: ['hydro', 'dam', 'water', 'diamer', 'bhasha'],
+                response: "Hydropower expansion is crucial! 💧<br><br>✓ 15,000 MW from new projects<br>✓ Diamer-Bhasha Dam: 4,500 MW<br>✓ Dasu Dam: 4,320 MW<br>✓ Multiple run-of-river projects<br>✓ Water storage for agriculture<br><br>These mega-dams will provide clean, reliable baseload power!",
+                stats: {total: '15,000 MW', 'Bhasha': '4,500 MW', 'Dasu': '4,320 MW'}
+            },
+            cost: {
+                keywords: ['cost', 'price', 'tariff', 'bill', 'affordable', 'cheap', 'expensive'],
+                response: "Affordable electricity is our priority! 💰<br><br>✓ 25-30% reduction in electricity costs<br>✓ Lower fuel import dependency<br>✓ Reduced transmission losses (15% → 8%)<br>✓ Competitive renewable energy rates<br>✓ Solar at Rs 6-7/kWh vs Rs 18-24/kWh thermal<br><br>Clean energy = Lower bills for everyone!",
+                stats: {reduction: '25-30%', 'solar cost': 'Rs 6-7/kWh', savings: 'Billions'}
+            },
+            jobs: {
+                keywords: ['job', 'employment', 'career', 'work', 'worker'],
+                response: "Green jobs for Pakistan's future! 👷<br><br>✓ 500,000+ new jobs by 2030<br>✓ Solar panel manufacturing<br>✓ Wind turbine maintenance<br>✓ Grid infrastructure workers<br>✓ Engineering & technical roles<br>✓ Training programs for youth<br><br>Clean energy = Economic prosperity!",
+                stats: {total: '500,000+', sectors: '12+', training: '50+ centers'}
+            },
+            loadshedding: {
+                keywords: ['load shedding', 'loadshedding', 'blackout', 'outage', 'power cut', 'reliable'],
+                response: "Ending load shedding forever! ⚡<br><br>✓ 45,000 MW total capacity by 2030<br>✓ Smart grid technology<br>✓ 99.9% grid reliability<br>✓ Real-time monitoring systems<br>✓ Backup power systems<br>✓ Distributed generation<br><br>Zero load shedding = Better quality of life for all Pakistanis!",
+                stats: {capacity: '45,000 MW', reliability: '99.9%', outages: 'Zero'}
+            },
+            grid: {
+                keywords: ['grid', 'transmission', 'distribution', 'smart', 'infrastructure'],
+                response: "Modern grid infrastructure! 🔌<br><br>✓ Smart grid technology for 80% of network<br>✓ Reduced transmission losses<br>✓ Real-time demand management<br>✓ Automated fault detection<br>✓ Prepaid metering systems<br>✓ Mobile app monitoring<br><br>21st century grid for a modern Pakistan!",
+                stats: {'smart grid': '80%', losses: '8%', 'investment': 'Billions'}
+            }
+        };
+
+        function addMessage(text, isUser, stats = null) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'agent-message'}`;
+            
+            let content = isUser ? `<strong>You:</strong><br>${text}` : `<strong>🤖 Energy AI:</strong><br>${text}`;
+            
+            if (stats) {
+                content += '<div class="stats-display">';
+                for (let [key, value] of Object.entries(stats)) {
+                    content += `<div class="stat-item"><div class="stat-value">${value}</div><div>${key}</div></div>`;
+                }
+                content += '</div>';
+            }
+            
+            messageDiv.innerHTML = content;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function getResponse(userInput) {
+            const input = userInput.toLowerCase();
+            
+            for (let [key, data] of Object.entries(knowledgeBase)) {
+                for (let keyword of data.keywords) {
+                    if (input.includes(keyword)) {
+                        return {response: data.response, stats: data.stats};
+                    }
+                }
+            }
+            
+            // Default response
+            return {
+                response: "Great question! Pakistan's Energy Vision 2030 focuses on three pillars:<br><br>⚡ <strong>Reliable Power:</strong> 24/7 electricity with zero load shedding<br>🌱 <strong>Green Energy:</strong> 60% renewable energy mix<br>💰 <strong>Affordable Rates:</strong> Lower costs for consumers<br><br>Try asking about specific topics like solar, wind, hydro, costs, or jobs!",
+                stats: {'Renewable Target': '60%', 'Total Capacity': '45,000 MW', 'Green Jobs': '500,000+'}
+            };
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Disable send button
+            document.getElementById('sendBtn').disabled = true;
+            
+            // Show typing indicator
+            showTyping();
+            
+            // Simulate AI thinking time
+            setTimeout(() => {
+                hideTyping();
+                const {response, stats} = getResponse(message);
+                addMessage(response, false, stats);
+                document.getElementById('sendBtn').disabled = false;
+                input.focus();
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function quickAsk(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Auto-focus input on load
+        window.onload = function() {
+            document.getElementById('userInput').focus();
+        };
+    </script>
+</body>
+</html>
